@@ -10,3 +10,4 @@ INSERT INTO unit_of_measure(description) values ('Pinch');
 INSERT INTO unit_of_measure(description) values ('Ounce');
 INSERT INTO unit_of_measure(description) values ('Dash');
 INSERT INTO unit_of_measure(description) values ('Pint');
+INSERT INTO unit_of_measure(description) values ('Each');
