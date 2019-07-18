@@ -7,13 +7,16 @@ import com.nazjara.model.Recipe;
 import com.nazjara.repository.CategoryRepository;
 import com.nazjara.repository.RecipeRepository;
 import com.nazjara.repository.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -29,7 +32,10 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     @Override
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        log.debug("onApplicationEvent() triggered");
+
         Recipe recipe1 = new Recipe();
         recipe1.setDescription("Guacamole, a dip made from avocados, is originally from Mexico. The name is derived from two Aztec Nahuatl words—ahuacatl (avocado) and molli (sauce).");
         recipe1.setPrepTime(10);
@@ -53,7 +59,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         try {
             recipe1.setImage(getClass().getClassLoader().getResourceAsStream("static/images/guacamole.jpg").readAllBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error while processing image for recipe", e);
         }
 
         recipe1.setDifficulty(Difficulty.EASY);
@@ -101,7 +107,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         try {
             recipe2.setImage(getClass().getClassLoader().getResourceAsStream("static/images/GrilledChickenTacos.jpg").readAllBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error while processing image for recipe", e);
         }
 
         recipe2.setDifficulty(Difficulty.MODERATE);
