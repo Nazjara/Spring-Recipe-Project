@@ -9,9 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +33,7 @@ public class RecipeServiceImplTest {
     @Before
     public void setUp() {
         when(recipeRepository.findAll()).thenReturn(Set.of(recipe));
+        when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
     }
 
     @Test
@@ -39,5 +43,14 @@ public class RecipeServiceImplTest {
         assertEquals(recipes.iterator().next(), recipe);
 
         verify(recipeRepository).findAll();
+    }
+
+    @Test
+    public void testGetRecipeById() {
+        Recipe newRecipe = recipeService.findById(1L);
+
+        assertSame(newRecipe, recipe);
+
+        verify(recipeRepository).findById(1L);
     }
 }
