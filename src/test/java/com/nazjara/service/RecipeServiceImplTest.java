@@ -1,5 +1,8 @@
 package com.nazjara.service;
 
+import com.nazjara.command.RecipeCommand;
+import com.nazjara.converter.RecipeCommandToRecipe;
+import com.nazjara.converter.RecipeToRecipeCommand;
 import com.nazjara.model.Recipe;
 import com.nazjara.repository.RecipeRepository;
 import org.junit.Before;
@@ -28,12 +31,24 @@ public class RecipeServiceImplTest {
     private RecipeRepository recipeRepository;
 
     @Mock
+    private RecipeCommandToRecipe recipeCommandToRecipe;
+
+    @Mock
+    private RecipeToRecipeCommand recipeToRecipeCommand;
+
+    @Mock
     private Recipe recipe;
+
+    @Mock
+    private RecipeCommand recipeCommand;
 
     @Before
     public void setUp() {
         when(recipeRepository.findAll()).thenReturn(Set.of(recipe));
         when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
+        when(recipeRepository.save(recipe)).thenReturn(recipe);
+        when(recipeCommandToRecipe.convert(recipeCommand)).thenReturn(recipe);
+        when(recipeToRecipeCommand.convert(recipe)).thenReturn(recipeCommand);
     }
 
     @Test
@@ -52,5 +67,14 @@ public class RecipeServiceImplTest {
         assertSame(newRecipe, recipe);
 
         verify(recipeRepository).findById(1L);
+    }
+
+    @Test
+    public void testSaveRecipeCommand() {
+        assertSame(recipeCommand, recipeService.saveRecipeCommand(recipeCommand));
+
+        verify(recipeCommandToRecipe).convert(recipeCommand);
+        verify(recipeRepository).save(recipe);
+        verify(recipeToRecipeCommand).convert(recipe);
     }
 }
