@@ -2,6 +2,7 @@ package com.nazjara.converter;
 
 import com.nazjara.command.IngredientCommand;
 import com.nazjara.model.Ingredient;
+import com.nazjara.model.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
@@ -28,7 +29,12 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
         ingredient.setId(source.getId());
         ingredient.setAmount(source.getAmount());
         ingredient.setDescription(source.getDescription());
-        ingredient.setUnitOfMeasure(uomConverter.convert(source.getUnitOfMeasure()));
+        ingredient.setUnitOfMeasure(uomConverter.convert(source.getUnitOfMeasureCommand()));
+
+        Recipe recipe = new Recipe();
+        recipe.setId(source.getRecipeId());
+        ingredient.setRecipe(recipe);
+
         return ingredient;
     }
 }

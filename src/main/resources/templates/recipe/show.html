@@ -85,13 +85,16 @@
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-11">
                                 <ul>
                                     <li th:each="ingredient : ${recipe.ingredients}"
                                         th:text="${ingredient.amount +
-                                        '  ' + ingredient.unitOfMeasure.description +
+                                        '  ' + ingredient.unitOfMeasureCommand.description +
                                         ' - ' + ingredient.description}"></li>
                                 </ul>
+                            </div>
+                            <div class="col-md-1">
+                                <a class="btn btn-default" th:href="@{'/recipe/' + ${recipe.id} + '/ingredients'}" role="button">View</a>
                             </div>
                         </div>
                     </div>

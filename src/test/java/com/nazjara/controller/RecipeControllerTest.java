@@ -1,7 +1,6 @@
 package com.nazjara.controller;
 
 import com.nazjara.command.RecipeCommand;
-import com.nazjara.model.Recipe;
 import com.nazjara.service.RecipeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,19 +29,16 @@ public class RecipeControllerTest {
     private RecipeService recipeService;
 
     @Mock
-    private Recipe recipe;
-
-    @Mock
     private RecipeCommand recipeCommand;
 
     private MockMvc mockMvc;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
        mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
 
-       when(recipeService.findById(anyLong())).thenReturn(recipe);
-       when(recipe.getImage()).thenReturn(new byte[]{});
+       when(recipeService.findRecipeCommandById(anyLong())).thenReturn(recipeCommand);
+       when(recipeCommand.getImage()).thenReturn(getClass().getClassLoader().getResourceAsStream("GrilledChickenTacos.jpg").readAllBytes());
        when(recipeCommand.getId()).thenReturn(2L);
        when(recipeService.saveRecipeCommand(any())).thenReturn(recipeCommand);
        when(recipeService.findRecipeCommandById(anyLong())).thenReturn(recipeCommand);
@@ -55,6 +51,8 @@ public class RecipeControllerTest {
                .andExpect(view().name("recipe/show"))
                .andExpect(model().attributeExists("recipe"))
                .andExpect(model().attributeExists("image"));
+
+       verify(recipeService).findRecipeCommandById(1L);
     }
 
     @Test
@@ -74,6 +72,8 @@ public class RecipeControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/2"));
+
+        verify(recipeService).saveRecipeCommand(any(RecipeCommand.class));
     }
 
     @Test
@@ -82,6 +82,8 @@ public class RecipeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/recipeform"))
                 .andExpect(model().attributeExists("recipe"));
+
+        verify(recipeService).findRecipeCommandById(1L);
     }
 
     @Test

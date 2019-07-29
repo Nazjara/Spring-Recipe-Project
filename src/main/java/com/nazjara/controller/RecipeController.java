@@ -1,7 +1,6 @@
 package com.nazjara.controller;
 
 import com.nazjara.command.RecipeCommand;
-import com.nazjara.model.Recipe;
 import com.nazjara.service.RecipeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -25,7 +24,7 @@ public class RecipeController {
 
     @GetMapping("/recipe/{id}")
     public String getById(@PathVariable String id, Model model) {
-        Recipe recipe = recipeService.findById(Long.valueOf(id));
+        RecipeCommand recipe = recipeService.findRecipeCommandById(Long.valueOf(id));
 
         model.addAttribute("recipe", recipe);
 
