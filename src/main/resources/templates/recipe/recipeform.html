@@ -133,6 +133,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">Serving example</h1>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-10" th:if="${image != null && !image.isEmpty()}">
+                                            <img th:src="@{'data:image/jpg;base64,' + ${image}}" width="500" height="500"/>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a class="btn btn-default" th:href="@{'/recipe/' + ${recipe.id} + '/image'}" role="button">Change image</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>

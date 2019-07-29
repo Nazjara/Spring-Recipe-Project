@@ -37,7 +37,13 @@ public class RecipeController {
 
     @GetMapping("/recipe/{id}/update")
     public String updateById(@PathVariable String id, Model model) {
-        model.addAttribute("recipe", recipeService.findRecipeCommandById(Long.valueOf(id)));
+        RecipeCommand recipeCommand = recipeService.findRecipeCommandById(Long.valueOf(id));
+
+        model.addAttribute("recipe", recipeCommand);
+
+        if (recipeCommand.getImage() != null) {
+            model.addAttribute("image", Base64.getEncoder().encodeToString(recipeCommand.getImage()));
+        }
 
         return "recipe/recipeform";
     }
