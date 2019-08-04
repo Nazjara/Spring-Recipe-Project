@@ -1,6 +1,7 @@
 package com.nazjara.controller;
 
 import com.nazjara.command.RecipeCommand;
+import com.nazjara.exception.NotFoundException;
 import com.nazjara.service.RecipeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +35,9 @@ public class RecipeControllerTest {
 
     @Before
     public void setUp() throws Exception {
-       mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
+       mockMvc = MockMvcBuilders
+               .standaloneSetup(recipeController)
+               .setControllerAdvice(new ControllerExceptionHandler()).build();
 
        when(recipeService.findRecipeCommandById(anyLong())).thenReturn(recipeCommand);
        when(recipeCommand.getImage()).thenReturn(getClass().getClassLoader().getResourceAsStream("GrilledChickenTacos.jpg").readAllBytes());
@@ -56,6 +58,24 @@ public class RecipeControllerTest {
     }
 
     @Test
+    public void testGetRecipeNotFound() throws Exception {
+        when(recipeService.findRecipeCommandById(1L)).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/recipe/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("error"));
+
+        verify(recipeService).findRecipeCommandById(1L);
+    }
+
+    @Test
+    public void testGetRecipeWithWrongId() throws Exception {
+        mockMvc.perform(get("/recipe/text"))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("error"));
+    }
+
+    @Test
     public void testGetNewRecipeForm() throws Exception {
         mockMvc.perform(get("/recipe/new"))
                 .andExpect(status().isOk())
@@ -69,11 +89,25 @@ public class RecipeControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "")
                 .param("description", "some string")
+                .param("directions", "some string")
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/2"));
 
         verify(recipeService).saveRecipeCommand(any(RecipeCommand.class));
+    }
+
+    @Test
+    public void testPostNewRecipeFormValidationFailed() throws Exception {
+        mockMvc.perform(post("/recipe")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("id", "")
+                .param("cookTime", "9999")
+        )
+                .andExpect(status().isOk())
+                .andExpect(view().name("recipe/recipeform"));
+
+        verify(recipeService, never()).saveRecipeCommand(any(RecipeCommand.class));
     }
 
     @Test

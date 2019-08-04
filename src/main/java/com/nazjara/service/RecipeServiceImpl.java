@@ -3,6 +3,7 @@ package com.nazjara.service;
 import com.nazjara.command.RecipeCommand;
 import com.nazjara.converter.RecipeCommandToRecipe;
 import com.nazjara.converter.RecipeToRecipeCommand;
+import com.nazjara.exception.NotFoundException;
 import com.nazjara.model.Recipe;
 import com.nazjara.repository.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Recipe findById(Long id) {
-        return recipeRepository.findById(id).orElse(null);
+        return recipeRepository.findById(id).orElseThrow(() ->
+                new NotFoundException(String.format("Recipe not found for id: %s", id)));
     }
 
     @Override

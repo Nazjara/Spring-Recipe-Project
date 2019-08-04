@@ -3,6 +3,7 @@ package com.nazjara.service;
 import com.nazjara.command.RecipeCommand;
 import com.nazjara.converter.RecipeCommandToRecipe;
 import com.nazjara.converter.RecipeToRecipeCommand;
+import com.nazjara.exception.NotFoundException;
 import com.nazjara.model.Recipe;
 import com.nazjara.repository.RecipeRepository;
 import org.junit.Before;
@@ -66,6 +67,13 @@ public class RecipeServiceImplTest {
         assertSame(newRecipe, recipe);
 
         verify(recipeRepository).findById(1L);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void getRecipeByIdNotFound() {
+        when(recipeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        recipeService.findById(1L);
     }
 
     @Test

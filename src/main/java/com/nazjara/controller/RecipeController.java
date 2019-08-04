@@ -1,15 +1,17 @@
 package com.nazjara.controller;
 
 import com.nazjara.command.RecipeCommand;
+import com.nazjara.exception.NotFoundException;
 import com.nazjara.service.RecipeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.Base64;
 
 @Slf4j
@@ -56,7 +58,13 @@ public class RecipeController {
     }
 
     @PostMapping("recipe")
-    public String saveOrUpdate(@ModelAttribute RecipeCommand recipeCommand) {
+    public String saveOrUpdate(@ModelAttribute("recipe") @Valid RecipeCommand recipeCommand, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(error -> log.debug(error.toString()));
+
+            return "recipe/recipeform";
+        }
+
         return "redirect:/recipe/" + recipeService.saveRecipeCommand(recipeCommand).getId();
     }
 
@@ -64,5 +72,18 @@ public class RecipeController {
     public String deleteById(@PathVariable String id) {
         recipeService.deleteById(Long.valueOf(id));
         return "redirect:/";
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handleNotFoundException(Exception exception) {
+        log.error(exception.getMessage());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("error");
+        modelAndView.addObject("status", "404 Not Found");
+        modelAndView.addObject("exception", exception);
+
+        return modelAndView;
     }
 }
