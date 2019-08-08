@@ -1,3 +1,4 @@
+# todo add migration
 INSERT INTO category(description) values ('Ukrainian');
 INSERT INTO category(description) values ('American');
 INSERT INTO category(description) values ('Italian');
