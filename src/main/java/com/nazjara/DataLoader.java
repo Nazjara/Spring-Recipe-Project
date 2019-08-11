@@ -31,14 +31,15 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
+//   used only for h2 population
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        log.debug("onApplicationEvent() triggered");
-
         if (recipeRepository.count() > 0) {
             return;
         }
+
+        log.debug("onApplicationEvent() triggered");
 
         Recipe recipe1 = new Recipe();
         recipe1.setDescription("Guacamole, a dip made from avocados, is originally from Mexico. The name is derived from two Aztec Nahuatl words—ahuacatl (avocado) and molli (sauce).");
